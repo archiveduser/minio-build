@@ -29,26 +29,14 @@ jobs:
       - name: Download dependencies
         run: go mod tidy
 
-      - name: Build for multiple platforms
+      - name: Build for linux/amd64
         run: |
           mkdir -p build
-          platforms=("linux/amd64" "linux/arm64" "windows/amd64" "darwin/amd64")
-          for platform in "${platforms[@]}"; do
-            os=$(echo $platform | cut -d'/' -f1)
-            arch=$(echo $platform | cut -d'/' -f2)
-            output="build/minio-${os}-${arch}"
-            if [ "$os" == "windows" ]; then
-              output+=".exe"
-            fi
-            GOOS=$os GOARCH=$arch go build -o $output ./cmd
-          done
+          output="build/minio-linux-amd64"
+          GOOS=linux GOARCH=amd64 go build -o $output ./cmd
 
-      - name: Upload all builds
+      - name: Upload linux/amd64 build
         uses: actions/upload-artifact@v3
         with:
-          name: minio-builds
-          path: |
-            build/minio-linux-amd64
-            build/minio-linux-arm64
-            build/minio-darwin-amd64
-            build/minio-windows-amd64.exe
+          name: minio-linux-amd64-build
+          path: build/minio-linux-amd64
