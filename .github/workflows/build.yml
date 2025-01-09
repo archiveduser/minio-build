@@ -17,11 +17,17 @@ jobs:
         run: |
           sed -i 's#minioMetaBucket = ".minio.sys"#minioMetaBucket = "../minio.sys"#' cmd/object-api-utils.go
 
-
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: 1.23 # 使用适合 minio 的 Go 版本，请根据需求调整
+          go-version: 1.23
+
+      - name: Enable Go Modules
+        run: |
+          export GO111MODULE=on
+
+      - name: Download dependencies
+        run: go mod tidy
 
       - name: Build for multiple platforms
         run: |
@@ -34,11 +40,15 @@ jobs:
             if [ "$os" == "windows" ]; then
               output+=".exe"
             fi
-            GOOS=$os GOARCH=$arch go build -o $output
+            GOOS=$os GOARCH=$arch go build -o $output ./cmd
           done
 
-      - name: Upload artifacts
+      - name: Upload all builds
         uses: actions/upload-artifact@v3
         with:
           name: minio-builds
-          path: build/
+          path: |
+            build/minio-linux-amd64
+            build/minio-linux-arm64
+            build/minio-darwin-amd64
+            build/minio-windows-amd64.exe
