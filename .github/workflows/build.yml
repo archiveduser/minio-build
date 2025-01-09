@@ -15,7 +15,8 @@ jobs:
 
       - name: Modify cmd/object-api-utils.go
         run: |
-          sed -i 's/minioMetaBucket = ".minio.sys"/minioMetaBucket = "..\\/minio.sys"/' cmd/object-api-utils.go
+          sed -i 's#minioMetaBucket = ".minio.sys"#minioMetaBucket = "../minio.sys"#' cmd/object-api-utils.go
+
 
       - name: Set up Go
         uses: actions/setup-go@v4
